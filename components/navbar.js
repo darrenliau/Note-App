@@ -6,10 +6,15 @@ const Navbar = () =>{
         <div className="navbar-wrapper">
             <ul className="navbar">
                 <li>
-                    <Link to={"/"}>Public Notes</Link>
+                    <a id={"NavLink"} href={"/"}>
+                        <img src={"/images/icon.png"}/>
+                    </a>
                 </li>
                 <li>
-                    <Link to={"/notes"}>Private Notes</Link>
+                    <a id={"NavLink"} href={"/"}>Public Notes</a>
+                </li>
+                <li>
+                    <a id={"NavLink"} href={"/notes"}>Private Notes</a>
                 </li>
             </ul>
         </div>

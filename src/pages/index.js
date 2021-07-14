@@ -133,8 +133,11 @@ const links = [
 const IndexPage = () => {
   return (
       <Layout>
-        <h1>Public Notes</h1>
-        <p> Buy 500g Steak</p>
+        <div>
+          <h1>Public Notes</h1>
+          <p> Notes is a notetaking app developed by Apple. It is provided on their iOS and macOS operating systems, the latter starting with OS X 10.8 Mountain Lion. It functions as a service for making short text notes, which can be synchronised between devices using Apple's iCloud service.</p>
+        </div>
+
       </Layout>
   )
 }

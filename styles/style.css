@@ -7,8 +7,12 @@ body{
     text-align: center;
 }
 .navbar-wrapper{
-    background: #fff7c9;
+    background: black;
     padding: 5px;
+
+}
+#NavLink{
+    color: White;
 
 }
 .navbar{
