@@ -1,20 +1,53 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Layout from "../../components/layout";
+//Api imports
+import {API,graphqlOperation} from "aws-amplify";
+import {createNote} from "../graphql/mutations";
+import {listNotes} from "../graphql/queries";
 
 //Amplify configuration
-import {Amplify} from "aws-amplify";
+import {Amplify,Hub} from "aws-amplify";
 import awsconfig from "../aws-exports"
 import {AmplifyAuthenticator,AmplifySignOut} from "@aws-amplify/ui-react"
 Amplify.configure(awsconfig)
 const Notespage = () =>{
-    const [newNote,setNewNote] = useState({title:"", body:""})
+    const [loading, setLoading] = useState(false);
+    const [newNote,setNewNote] = useState({title:"", body:""});
     const [notes,setNotes] = useState([]);
-    const handleSubmit=(e)=>{
+    const [isUserLoggedIn,setIsUserLoggedIn] = useState(false);
+    useEffect(()=> {
+        let isUnmounted = false;
+        Hub.listen('auth',({payload:{event,data}}) =>{
+            if(event === "signIn"){
+                //user is signed in
+                !isUnmounted && setIsUserLoggedIn(true);
+            }
+        })
+        return ()=> {
+            isUnmounted=true;
+        }
+    },[]);
+    useEffect(()=> {
+        fetchNotes();
+    },[isUserLoggedIn])
+    const fetchNotes = async()=>{
+        setLoading(true);
+        try{
+            const notesData = await API.graphql(graphqlOperation(listNotes))
+            const notes = notesData.data.listNotes.items;
+            setNotes(notes);
+            setLoading(false)
+        }catch(err){
+            console.log("Error in fetching notes")
+        }
+    }
+    const handleSubmit= async (e)=>{
         e.preventDefault();
         try{
             if (!newNote.title.length || !newNote.body.length)return;
-            // create note in backend
             setNotes([newNote,...notes]);
+            await API.graphql(graphqlOperation(createNote,{input: newNote}))
+            setNewNote({title: "",body: ""});
             console.log("New note added")
         }catch (err){
             console.log("error in creating the note")
@@ -55,7 +88,7 @@ const Notespage = () =>{
                     </p>
                 </form>
                 <hr/>
-
+                {loading ? <h2>Loading...</h2>:<span></span>}
                 {notes.map((note,index)=>(
                     <div key = {index}>
                         <h2>{note.title}</h2>
